@@ -21,14 +21,14 @@
 #define X_WIDTH 	128
 #define Y_WIDTH 	64	    						  
 //-----------------OLED端口定义----------------  					   
-#define OLED_CS_Clr()  GPIO_ResetBits(GPIOD,GPIO_Pin_3)//CS
-#define OLED_CS_Set()  GPIO_SetBits(GPIOD,GPIO_Pin_3)
+#define OLED_CS_Clr()  GPIO_ResetBits(GPIOA,GPIO_Pin_8)//CS PA8
+#define OLED_CS_Set()  GPIO_SetBits(GPIOA,GPIO_Pin_8)
 
-#define OLED_RST_Clr() GPIO_ResetBits(GPIOD,GPIO_Pin_4)//RES
-#define OLED_RST_Set() GPIO_SetBits(GPIOD,GPIO_Pin_4)
+#define OLED_RST_Clr() GPIO_ResetBits(GPIOB,GPIO_Pin_14)//RES PB14
+#define OLED_RST_Set() GPIO_SetBits(GPIOB,GPIO_Pin_14)
 
-#define OLED_DC_Clr() GPIO_ResetBits(GPIOD,GPIO_Pin_5)//DC
-#define OLED_DC_Set() GPIO_SetBits(GPIOD,GPIO_Pin_5)
+#define OLED_DC_Clr() GPIO_ResetBits(GPIOB,GPIO_Pin_15)//DC PB15
+#define OLED_DC_Set() GPIO_SetBits(GPIOB,GPIO_Pin_15)
 
 #define OLED_WR_Clr() GPIO_ResetBits(GPIOG,GPIO_Pin_14)
 #define OLED_WR_Set() GPIO_SetBits(GPIOG,GPIO_Pin_14)
@@ -42,11 +42,11 @@
 #define DATAOUT(x) GPIO_Write(GPIOC,x);//输出  
 //使用4线串行接口时使用 
 
-#define OLED_SCLK_Clr() GPIO_ResetBits(GPIOD,GPIO_Pin_6)//CLK
-#define OLED_SCLK_Set() GPIO_SetBits(GPIOD,GPIO_Pin_6)
+#define OLED_SCLK_Clr() GPIO_ResetBits(GPIOB,GPIO_Pin_12)//CLK PB12
+#define OLED_SCLK_Set() GPIO_SetBits(GPIOB,GPIO_Pin_12)
 
-#define OLED_SDIN_Clr() GPIO_ResetBits(GPIOD,GPIO_Pin_7)//DIN
-#define OLED_SDIN_Set() GPIO_SetBits(GPIOD,GPIO_Pin_7)
+#define OLED_SDIN_Clr() GPIO_ResetBits(GPIOB,GPIO_Pin_13)//DIN PB13
+#define OLED_SDIN_Set() GPIO_SetBits(GPIOB,GPIO_Pin_13)
 
  		     
 #define OLED_CMD  0	//写命令

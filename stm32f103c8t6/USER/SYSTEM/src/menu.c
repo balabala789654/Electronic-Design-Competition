@@ -24,7 +24,6 @@ void menu_page_1_2(void)
 extern int Encoder_TIM;
 void menu_page_1(int _input)
 {
-	//OLED_ShowString(0, 0, "speed: ");
-	OLED_ShowNum(0, 0, 12, 8, 8);
-	OLED_ShowNum(8, 1, Encoder_TIM, 8, 1);
+	oled_display_chinese(16, 0, 8, 3);
+	//OLED_DrawBMP(30, 1, 59+30, 8, image);
 }

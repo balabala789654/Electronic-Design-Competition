@@ -20,16 +20,16 @@ typedef struct
 #define brake 3
 
 #define motorA_in_1_pin GPIO_Pin_4
-#define motorA_in_2_pin GPIO_Pin_0
+#define motorA_in_2_pin GPIO_Pin_5
 
-#define motorB_in_1_pin GPIO_Pin_5
+#define motorB_in_1_pin GPIO_Pin_0
 #define motorB_in_2_pin GPIO_Pin_1
 
 
-#define motorA_in_1 PCout(4) //PC4
-#define motorA_in_2 PBout(0) //PB0
+#define motorA_in_1 PAout(4) //PA4
+#define motorA_in_2 PAout(5) //PA5
 
-#define motorB_in_1 PCout(5) //PC5
+#define motorB_in_1 PBout(0) //PB0
 #define motorB_in_2 PBout(1) //PB1
 
 void D153B_init(void);

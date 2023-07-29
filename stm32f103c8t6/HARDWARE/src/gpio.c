@@ -38,17 +38,17 @@ void D153B_goio_Init(void) //IO初始化
 { 
 	GPIO_InitTypeDef  GPIO_InitStructure;
  	
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB|RCC_APB2Periph_GPIOC, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB|RCC_APB2Periph_GPIOA, ENABLE);
 	
-	GPIO_InitStructure.GPIO_Pin = motorA_in_1_pin|motorB_in_1_pin;				 
+	GPIO_InitStructure.GPIO_Pin = motorA_in_1_pin|motorA_in_2_pin;				 
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		 
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;		 
-	GPIO_Init(GPIOC, &GPIO_InitStructure);					 
-	GPIO_ResetBits(GPIOC,motorA_in_1_pin|motorB_in_1_pin);						 
+	GPIO_Init(GPIOA , &GPIO_InitStructure);					 
+	GPIO_ResetBits(GPIOA,motorA_in_1_pin|motorA_in_2_pin);						 
 
-	GPIO_InitStructure.GPIO_Pin = motorA_in_2_pin|motorB_in_2_pin;
+	GPIO_InitStructure.GPIO_Pin = motorB_in_1_pin|motorB_in_2_pin;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
-	GPIO_ResetBits(GPIOB,motorA_in_2_pin|motorB_in_2_pin);
+	GPIO_ResetBits(GPIOB,motorB_in_1_pin|motorB_in_2_pin);
 }
 
 //按键处理函数

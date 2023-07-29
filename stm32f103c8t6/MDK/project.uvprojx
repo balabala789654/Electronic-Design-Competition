@@ -588,6 +588,16 @@
               <FileType>1</FileType>
               <FilePath>..\USER\SYSTEM\src\mycar.c</FilePath>
             </File>
+            <File>
+              <FileName>E18_D80NK.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\SYSTEM\src\E18_D80NK.c</FilePath>
+            </File>
+            <File>
+              <FileName>k210.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\USER\SYSTEM\src\k210.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

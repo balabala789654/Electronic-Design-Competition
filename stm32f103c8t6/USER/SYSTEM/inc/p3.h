@@ -31,5 +31,12 @@ p3 p3_remote_output(uint8_t _data[13]);
 
 extern uint8_t verify_data[13];
 
+typedef struct
+{
+	char controller_flag;
+	p3 (* car_controller)(uint8_t _data[13]);
+}CONTROLLER;
+
+
 #endif
 

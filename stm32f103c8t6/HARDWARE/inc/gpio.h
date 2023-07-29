@@ -4,7 +4,7 @@
 #include "sys.h"
 
 //LED¶Ë¿Ú¶¨Òå
-#define LED0 PCout(5)// PB5
+#define LED0 PCout(13)// PB5
 
 void LED_Init(void);
 void KEY_Init(void); 
