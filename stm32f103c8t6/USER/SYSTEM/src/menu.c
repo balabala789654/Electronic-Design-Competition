@@ -21,9 +21,12 @@ void menu_page_1_2(void)
 {
 	OLED_DrawBMP(30, 0, 59+30, 7, image);
 }
-extern int Encoder_TIM;
 void menu_page_1(int _input)
 {
-	oled_display_chinese(16, 0, 8, 3);
-	//OLED_DrawBMP(30, 1, 59+30, 8, image);
+	oled_display_chinese(16, 0, 8, 0);
+	OLED_ShowString(0, 2, "img_cx: ");
+	OLED_ShowNum(60, 2, mycar.communicate.rec_data[1], 3, 8);
+	OLED_ShowString(0, 4, "img_cy: ");
+	OLED_ShowNum(60, 4, mycar.communicate.rec_data[2], 3, 8);
+
 }

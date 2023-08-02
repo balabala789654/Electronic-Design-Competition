@@ -2,6 +2,7 @@
 #include "usart.h"	  
 #include "p3.h"
 #include "mycar.h"
+#include "k210.h"
 
 //////////////////////////////////////////////////////////////////
 //加入以下代码,支持printf函数,而不需要选择use MicroLIB	  
@@ -173,15 +174,28 @@ void USART3_IRQHandler(void)
 }
 
 static int n;
+static char verify_flag=1;
 void USART2_IRQHandler(void)
 {
-	if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)  //接收中断(接收到的数据必须是0x0d 0x0a结尾)
+	if(USART_GetITStatus(USART2, USART_IT_RXNE) != RESET)
 	{
 		
 		mycar.communicate.rec_data[n] = USART_ReceiveData(USART2);
 		n++;
 		if(n==data_len)
+		{
+			if(verify_flag--)
+			{
+				mycar.communicate.head = data_head_end_comfirm(data_head_find, data_end_find, mycar.communicate.rec_data)[0];
+				mycar.communicate.end = data_head_end_comfirm(data_head_find, data_end_find, mycar.communicate.rec_data)[1];
+			}
+			for(int i=0; i<data_len; i++)
+			{
+				mycar.communicate.verify_data[i] = k210_verify(mycar.communicate.rec_data, mycar.communicate.head, mycar.communicate.end)[i];
+			}
 			n=0;
+		}
+		USART_ClearFlag(USART2, USART_FLAG_RXNE);
 	}
 	
 }

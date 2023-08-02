@@ -17,8 +17,13 @@ void mycar_init(void)
 int mycar_control(p3 (* _p3)(uint8_t _data[13]), char _flag)
 {
 	int _straight = _p3(verify_data).ch[3]*max_speed/127;
-	int _spin = _p3(verify_data).ch[0]*1000/127;
+	int _spin;
 	int _straight_1,  _straight_2;
+	
+	if(_p3(verify_data).L2)
+		_spin = (mycar.communicate.verify_data[1]-160)*1500/127;
+	else 
+		_spin = _p3(verify_data).ch[0]*1000/127;
 	
 	_straight_1 = _straight+_spin;
 	_straight_2 = _straight-_spin;
@@ -26,7 +31,7 @@ int mycar_control(p3 (* _p3)(uint8_t _data[13]), char _flag)
 	mycar.chassis.control(_straight_1, _straight_2, _flag);
 	return _straight;
 }
-
+ 
 
 void chassis_control(int _speed_1, int _speed_2, char _flag)
 {

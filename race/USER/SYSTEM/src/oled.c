@@ -1,3 +1,33 @@
+//////////////////////////////////////////////////////////////////////////////////	 
+//本程序只供学习使用，未经作者许可，不得用于其它任何用途
+//中景园电子
+//店铺地址：http://shop73023976.taobao.com/?spm=2013.1.0.0.M4PqC2
+//
+//  文 件 名   : main.c
+//  版 本 号   : v2.0
+//  作    者   : HuangKai
+//  生成日期   : 2014-0101
+//  最近修改   : 
+//  功能描述   : OLED 4接口演示例程(51系列)
+//              说明: 
+//              ----------------------------------------------------------------
+//              GND    电源地
+//              VCC  接5V或3.3v电源
+//              D0   接PD6（SCL）
+//              D1   接PD7（SDA）
+//              RES  接PD4
+//              DC   接PD5
+//              CS   接PD3               
+//              ----------------------------------------------------------------
+// 修改历史   :
+// 日    期   : 
+// 作    者   : HuangKai
+// 修改内容   : 创建文件
+//版权所有，盗版必究。
+//Copyright(C) 中景园电子2014/3/16
+//All rights reserved
+//******************************************************************************/
+
 #include "oled.h"
 #include "stdlib.h"
 #include "oledfont.h"  	 
@@ -140,12 +170,12 @@ void OLED_ShowNum(u8 x,u8 y,u32 num,u8 len,u8 size)
 		{
 			if(temp==0)
 			{
-				OLED_ShowChar(x+(size)*t,y,' ');
+				OLED_ShowChar(x+(size/2)*t,y,' ');
 				continue;
 			}else enshow=1; 
 		 	 
 		}
-	 	OLED_ShowChar(x+(size)*t,y,temp+'0'); 
+	 	OLED_ShowChar(x+(size/2)*t,y,temp+'0'); 
 	}
 } 
 //显示一个字符号串
@@ -164,13 +194,17 @@ void OLED_ShowCHinese(u8 x,u8 y,u8 no)
 {      			    
 	u8 t,adder=0;
 	OLED_Set_Pos(x,y);	
-    for(t=0;t<32;t++)
-	{
-		OLED_WR_Byte(Hzk[no][t],OLED_DATA);
-		adder+=1;
-		if(t==15) OLED_Set_Pos(x,y+1);
-	}	
-			
+    for(t=0;t<16;t++)
+		{
+				OLED_WR_Byte(Hzk[2*no][t],OLED_DATA);
+				adder+=1;
+     }	
+		OLED_Set_Pos(x,y+1);	
+    for(t=0;t<16;t++)
+			{	
+				OLED_WR_Byte(Hzk[2*no+1][t],OLED_DATA);
+				adder+=1;
+      }					
 }
 /***********功能描述：显示显示BMP图片128×64起始点坐标(x,y),x的范围0～127，y为页的范围0～7*****************/
 void OLED_DrawBMP(unsigned char x0, unsigned char y0,unsigned char x1, unsigned char y1,unsigned char BMP[])
@@ -198,19 +232,13 @@ void OLED_Init(void)
  	 
  	GPIO_InitTypeDef  GPIO_InitStructure;
  	
- 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB|RCC_APB2Periph_GPIOC|RCC_APB2Periph_GPIOA, ENABLE);	 //使能PC,D,G端口时钟
+ 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB|RCC_APB2Periph_GPIOD|RCC_APB2Periph_GPIOG, ENABLE);	 //使能PC,D,G端口时钟
 
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_12|GPIO_Pin_13|GPIO_Pin_14|GPIO_Pin_15;	 //PD3,PD6推挽输出  
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4|GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7|GPIO_Pin_3|GPIO_Pin_8;	 //PD3,PD6推挽输出  
  	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		 //推挽输出
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;//速度50MHz
- 	GPIO_Init(GPIOB, &GPIO_InitStructure);	  //初始化GPIOD3,6
- 	GPIO_SetBits(GPIOB,GPIO_Pin_12|GPIO_Pin_13|GPIO_Pin_14|GPIO_Pin_15);	//PD3,PD6 输出高
-
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;	 //PD3,PD6推挽输出  
- 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; 		 //推挽输出
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;//速度50MHz
- 	GPIO_Init(GPIOA, &GPIO_InitStructure);	  //初始化GPIOD3,6
- 	GPIO_SetBits(GPIOA,GPIO_Pin_8);	//PD3,PD6 输出高
+ 	GPIO_Init(GPIOD, &GPIO_InitStructure);	  //初始化GPIOD3,6
+ 	GPIO_SetBits(GPIOD,GPIO_Pin_4|GPIO_Pin_5|GPIO_Pin_6|GPIO_Pin_7|GPIO_Pin_3|GPIO_Pin_8);	//PD3,PD6 输出高
 
  #if OLED_MODE==1
  
@@ -277,25 +305,7 @@ void OLED_Init(void)
 }  
 
 
-/**************以下为个人加入程序***************/
 
-void oled_display_chinese(char word_width, char word_length, char num, char line)
-{
-	int i,j=0;
-	for(i=0, j=0; i<num; i++, j+=word_width)
-	{
-		OLED_ShowCHinese(j, line, i);
-	}
-	
-}
-
-void oled_display_image()
-{
-	
-}
-
-
-/***********************************************/
 
 
 
