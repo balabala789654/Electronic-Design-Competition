@@ -17,7 +17,7 @@ black_point_d=(0, 0)
 
 def find_black_broder(threshold):
     blobs = img.find_blobs(threshold,x_stride=2, y_stride=2, area_threshold=5, pixels_threshold=5,merge=True,margin=10)
-    if len(blobs)>=1 :#æœ‰è‰²å—
+    if len(blobs)>=1 :#ÓÐÉ«¿é
         b = blobs[0]
         cx = b[5]
         cy = b[6]
@@ -27,7 +27,7 @@ def find_black_broder(threshold):
         black_rect[3]=b[3]+5
         img.draw_rectangle(black_rect)
         return int(cx), int(cy)
-    return -1, -1 #è¡¨ç¤ºæ²¡æœ‰æ‰¾åˆ°
+    return -1, -1 #±íÊ¾Ã»ÓÐÕÒµ½
 
 clock = time.clock()
 black_threshold =  [(0, 0, -128, 127, -128, 127)]
