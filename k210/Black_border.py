@@ -1,5 +1,5 @@
 import sensor, image, time, lcd, gc
-
+from modules import ybserial
 lcd.init()
 sensor.reset()
 sensor.set_pixformat(sensor.RGB565)
@@ -9,15 +9,24 @@ sensor.set_auto_exposure(1)
 sensor.set_auto_whitebal(False)
 sensor.set_auto_gain(False)
 
+serial = ybserial()
 black_rect=[50, 50, 50, 50]
 black_point_a=(0, 0)
 black_point_b=(0, 0)
 black_point_c=(0, 0)
 black_point_d=(0, 0)
 
+def communicate():
+    serial.send_byte(0xaa)
+    serial.send_byte(0x10)
+    serial.send_byte(0x20)
+    serial.send_byte(0xbb)
+    return None
+
+
 def find_black_broder(threshold):
     blobs = img.find_blobs(threshold,x_stride=2, y_stride=2, area_threshold=5, pixels_threshold=5,merge=True,margin=10)
-    if len(blobs)>=1 :#有色块
+    if len(blobs)>=1 :
         b = blobs[0]
         cx = b[5]
         cy = b[6]
@@ -27,7 +36,7 @@ def find_black_broder(threshold):
         black_rect[3]=b[3]+5
         img.draw_rectangle(black_rect)
         return int(cx), int(cy)
-    return -1, -1 #表示没有找到
+    return -1, -1 #锟斤拷示没锟斤拷锟揭碉拷
 
 clock = time.clock()
 black_threshold =  [(0, 0, -128, 127, -128, 127)]
@@ -43,5 +52,6 @@ while(True):
         black_point_c =r.corners()[2]
         black_point_d =r.corners()[3]
         print(black_point_a, black_point_b, black_point_c, black_point_d)
+        communicate()
     lcd.display(img)
     gc.collect()
