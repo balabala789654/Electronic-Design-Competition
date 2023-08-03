@@ -7,7 +7,7 @@ sensor.set_framesize(sensor.QVGA)
 sensor.skip_frames(time = 10000)
 sensor.set_auto_whitebal(False)
 sensor.set_auto_gain(False)
-sensor.set_auto_exposure(False, exposure_us=3970000)
+sensor.set_auto_exposure(False, exposure_us=3950000)
 sensor.set_contrast(2)            # 设置对比度 0 这个参数无法读取 且调这个参数对画面似乎不会产生影响 暂时注释
 sensor.set_brightness(2)          # 设置亮度 0 这个参数无法读取 且调这个参数对画面似乎不会产生影响 暂时注释
 sensor.set_saturation(2)
@@ -23,12 +23,13 @@ def communicate(point_a, point_b):
     serial.send_byte(0xff)
     return None
 
-red_threshold = (0, 100, 59, 127, 26, 60)
-green_threshold = (0, 100, -128, -41, 43, 92)
+red_threshold = (0, 100, 58, 82, 33, 69)
+green_threshold = (0, 100, -118, -18, 32, 53)
+white_threshold = (0, 100, -118, -18, 32, 53)
 point_green=(0, 0)
 point_red=(0, 0)
 def find_ray(threshold, x):
-    blobs = img.find_blobs([threshold], x_stride=2, y_stride=2, area_threshold=2, pixel_threshold=2, merge=True, margin=10)
+    blobs = img.find_blobs([threshold], x_stride=1, y_stride=1, area_threshold=0, pixel_threshold=0, merge=True, margin=10)
     if blobs:
         b = blobs[0]
         cx = b.cx()
@@ -50,6 +51,7 @@ while True:
     img = sensor.snapshot()
     #img.binary([green_threshold])
     find_ray(green_threshold, 1)
+    img = sensor.snapshot()
     find_ray(red_threshold, 0)
     communicate(point_green, point_red)
     lcd.display(img)
