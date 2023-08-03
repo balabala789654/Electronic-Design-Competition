@@ -16,11 +16,17 @@ black_point_b=(0, 0)
 black_point_c=(0, 0)
 black_point_d=(0, 0)
 
-def communicate():
-    serial.send_byte(0xaa)
-    serial.send_byte(0x10)
-    serial.send_byte(0x20)
-    serial.send_byte(0xbb)
+def communicate(point_A, point_B, point_C, point_D):
+    serial.send_byte(0xfe)
+    serial.send_byte(point_A[0])
+    serial.send_byte(point_A[1])
+    serial.send_byte(point_B[0])
+    serial.send_byte(point_B[1])
+    serial.send_byte(point_C[0])
+    serial.send_byte(point_C[1])
+    serial.send_byte(point_D[0])
+    serial.send_byte(point_D[1])
+    serial.send_byte(0xff)
     return None
 
 
@@ -36,7 +42,7 @@ def find_black_broder(threshold):
         black_rect[3]=b[3]+5
         img.draw_rectangle(black_rect)
         return int(cx), int(cy)
-    return -1, -1 #��ʾû���ҵ�
+    return -1, -1
 
 clock = time.clock()
 black_threshold =  [(0, 0, -128, 127, -128, 127)]
@@ -52,6 +58,6 @@ while(True):
         black_point_c =r.corners()[2]
         black_point_d =r.corners()[3]
         print(black_point_a, black_point_b, black_point_c, black_point_d)
-        communicate()
+        communicate(black_point_a, black_point_b, black_point_c, black_point_d)
     lcd.display(img)
     gc.collect()

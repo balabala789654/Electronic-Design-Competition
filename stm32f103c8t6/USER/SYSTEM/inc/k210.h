@@ -1,7 +1,7 @@
 #ifndef _K210_H
 #define _K210_H
 
-#define data_len 4
+#define data_len 10
 
 void K210_Init(void);
 

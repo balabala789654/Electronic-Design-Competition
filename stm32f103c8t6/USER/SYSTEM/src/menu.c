@@ -23,10 +23,16 @@ void menu_page_1_2(void)
 }
 void menu_page_1(int _input)
 {
-	oled_display_chinese(16, 0, 8, 0);
-	OLED_ShowString(0, 2, "img_cx: ");
-	OLED_ShowNum(60, 2, mycar.communicate.rec_data[1], 3, 8);
-	OLED_ShowString(0, 4, "img_cy: ");
-	OLED_ShowNum(60, 4, mycar.communicate.rec_data[2], 3, 8);
-
+	OLED_ShowString(0, 0, "A:");
+	OLED_ShowNum(20, 0, mycar.communicate.rec_data[1], 3, 8);
+	OLED_ShowNum(60, 0, mycar.communicate.rec_data[2], 3, 8);
+	OLED_ShowString(0, 2, "B:");
+	OLED_ShowNum(20, 2, mycar.communicate.rec_data[3], 3, 8);
+	OLED_ShowNum(60, 2, mycar.communicate.rec_data[4], 3, 8);
+	OLED_ShowString(0, 4, "C:");
+	OLED_ShowNum(20, 4, mycar.communicate.rec_data[5], 3, 8);
+	OLED_ShowNum(60, 4, mycar.communicate.rec_data[6], 3, 8);
+	OLED_ShowString(0, 6, "D:");
+	OLED_ShowNum(20, 6, mycar.communicate.rec_data[7], 3, 8);
+	OLED_ShowNum(60, 6, mycar.communicate.rec_data[8], 3, 8);	
 }
