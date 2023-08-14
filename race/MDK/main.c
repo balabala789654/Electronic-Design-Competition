@@ -21,8 +21,8 @@
 	
 	2.5ms----------------反向最大转速；
 */
-int angle=150;
-
+int angle=50;
+int angle1=50;
 int main()
 {
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4); 
@@ -32,7 +32,7 @@ int main()
 	while(1)
 	{
 		TIM_SetCompare1(TIM3, angle);
-		TIM_SetCompare2(TIM3, 200);
+		TIM_SetCompare2(TIM3, angle1);
 	}
  }
 

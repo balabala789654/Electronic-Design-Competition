@@ -13,7 +13,7 @@ lcd.init()
 lcd.rotation(3)
 sensor.reset()
 sensor.set_pixformat(sensor.RGB565)
-sensor.set_framesize(sensor.QQVGA) #妈蛋 板子太垃圾只能用小画幅
+sensor.set_framesize(sensor.QQVGA)
 sensor.skip_frames(time = 10000)
 sensor.set_auto_exposure(1)
 sensor.set_auto_whitebal(True)
@@ -31,14 +31,16 @@ tranfrom_black_point_b=(0, 0)
 tranfrom_black_point_c=(0, 0)
 tranfrom_black_point_d=(0, 0)
 
-k=8.1227
-
-def transfrom(_point, _rect, k):
-    #print(((_point[0]-_rect[0])*k), ((_point[1]-_rect[1])*k)))
-    return (int(((_point[0]-_rect[0])*k)/10), int(((_point[1]-_rect[1])*k)/10)))
+k1=0.5303
+k2=0.0889
+def transfrom(_point, _rect, _k_1, _k_2):
+    return (int(((144-_point[0])*_k_1)), int((((105-_point[1])*_k_2))))
 
 def communicate(point_A, point_B, point_C, point_D):
     FH = bytearray([0xfe, point_A[0], point_A[1], point_B[0], point_B[1], point_C[0], point_C[1], point_D[0], point_D[1], 0xff])
+    #FH = bytearray([0xfe, point_A[0], point_A[1], 0xff])
+    #FH = bytearray([0xfe, 0x00, 0x00, 89, 60, 0x00, 0x00, 0x00, 0x00, 0xff])
+    #FH = bytearray([0xfe, 0X00, 0X00, 89, 60, 0xff])
     uart.write(FH)
     time.sleep_ms(10)
     return None
@@ -58,9 +60,21 @@ def find_black_broder(threshold):
         return int(cx), int(cy)
     return -1, -1
 
+def find_red_ray(threshold, b_rect):
+    blobs = img.find_blobs(threshold,x_stride=2, y_stride=2, area_threshold=5, pixels_threshold=5,merge=True,margin=10,roi=b_rect)
+    if len(blobs)>=1 :
+        b = blobs[0]
+        cx = b[5]
+        cy = b[6]
+        img.draw_rectangle(b.rect(), color=(255, 0, 0))
+        img.draw_cross(cx, cy, color=(255, 0, 0))
+
+        return int(cx), int(cy)
+    return (-1, -1)
+
 clock = time.clock()
 black_threshold =  [(0, 0, -128, 127, -128, 127)]
-black_rect=[30, 25, 110, 75]
+black_rect=[12, 15, 132, 90]
 while(True):
     clock.tick()
     img = sensor.snapshot()
@@ -74,10 +88,10 @@ while(True):
         black_point_c =r.corners()[2]
         black_point_d =r.corners()[3]
         #print(black_point_a, black_point_b, black_point_c, black_point_d)
-        tranfrom_black_point_a=transfrom(black_point_a, black_rect, k)
-        tranfrom_black_point_b=transfrom(black_point_b, black_rect, k)
-        tranfrom_black_point_c=transfrom(black_point_c, black_rect, k)
-        tranfrom_black_point_d=transfrom(black_point_d, black_rect, k)
+        tranfrom_black_point_a=transfrom(black_point_a, black_rect, k1, k2)
+        tranfrom_black_point_b=transfrom(black_point_b, black_rect, k1, k2)
+        tranfrom_black_point_c=transfrom(black_point_c, black_rect, k1, k2)
+        tranfrom_black_point_d=transfrom(black_point_d, black_rect, k1, k2)
         print("a:", tranfrom_black_point_a, "b: ", tranfrom_black_point_b, "c: ", tranfrom_black_point_c, "d: ", tranfrom_black_point_d)
         communicate(tranfrom_black_point_a, tranfrom_black_point_b, tranfrom_black_point_c, tranfrom_black_point_d)
     lcd.display(img)
