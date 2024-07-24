@@ -45,7 +45,7 @@ def thread_opencv_entry(x):
         
         contours, n = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
         cv2.drawContours(frame, contours=contours, contourIdx=-1, color=(255, 0, 0), thickness=2)
-        Circles = cv2.HoughCircles(mask, cv2.HOUGH_GRADIENT, dp=1.2, minDist=200, param1=20, param2=10, minRadius=5, maxRadius=10)
+        Circles = cv2.HoughCircles(mask, cv2.HOUGH_GRADIENT, dp=1.2, minDist=200, param1=20, param2=10, minRadius=1, maxRadius=5)
         
         if Circles is not None:
             Circles = np.round(Circles[0, :]).astype("int")
@@ -64,7 +64,7 @@ def thread_opencv_entry(x):
             break
         
     return None
-
+ 
 def thread_serial_entry(x):
     while True:
         pos_data = pos_queue.get()
@@ -72,6 +72,7 @@ def thread_serial_entry(x):
         if pos_data == None:
             print("get None data, end of the thread")
             break
+        pos_queue.task_done()
     return None
 
 
@@ -95,12 +96,14 @@ if __name__ == "__main__":
     # cv2.namedWindow("out", cv2.WINDOW_NORMAL)
 
     global video
-    video = cv2.VideoCapture(0)
+    video = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+    # video = cv2.VideoCapture(1)
+
     video.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)
     video.set(cv2.CAP_PROP_EXPOSURE, -1) # 曝光度
-    video.set(cv2.CAP_PROP_BRIGHTNESS, 0) # 亮度
-    video.set(cv2.CAP_PROP_CONTRAST, 0.5) # 对比度
-    video.set(cv2.CAP_PROP_SATURATION, 0.5) # 饱和度    
+    video.set(cv2.CAP_PROP_BRIGHTNESS, 100) # 亮度
+    video.set(cv2.CAP_PROP_CONTRAST, 100) # 对比度
+    video.set(cv2.CAP_PROP_SATURATION, 500) # 饱和度    
 
     print(video.get(cv2.CAP_PROP_EXPOSURE), video.get(cv2.CAP_PROP_BRIGHTNESS), video.get(cv2.CAP_PROP_CONTRAST), video.get(cv2.CAP_PROP_SATURATION))
 
