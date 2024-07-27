@@ -26,8 +26,15 @@ def get_Trackbar():
     return HSV_ret
 
 def serial_init(port_name, baudrate):
-    my_serial = serial.Serial(port=port_name, baudrate=baudrate, timeout=1)
-    return None
+    global my_serial
+    my_serial = serial.Serial(port=port_name, baudrate=baudrate, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=None)
+    if my_serial.isOpen():
+        print("serial open success :-)")
+        print(my_serial.name)
+        return True
+    else:
+        print("serial open fialed :-(")
+        return False
 
 def thread_opencv_entry(x):
     while video.isOpened():
@@ -51,10 +58,12 @@ def thread_opencv_entry(x):
             Circles = np.round(Circles[0, :]).astype("int")
 
             for [x, y, r] in Circles:
-                print("x: ", x, "y: ", y, "r: ", r)
+                # print("x: ", x, "y: ", y, "r: ", r)
                 cv2.circle(frame, [x, y], r, (0, 255, 0), 2)
                 pos_queue.put([x, y])
-
+        else:
+            pos_queue.put([0, 0])
+        
         cv2.putText(img=frame, text=f"fps:{video.get(cv2.CAP_PROP_FPS)}", org=[0,50], fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=[0, 0, 0], thickness=1)
         # cv2.imshow("frame", frame)
         cv2.imshow("HSV", mask)
@@ -64,15 +73,22 @@ def thread_opencv_entry(x):
             break
         
     return None
- 
+
 def thread_serial_entry(x):
+    data = 0
     while True:
+        result = my_serial.write(f"{data}".encode('gbk'))
+        # result = my_serial.write(f"{data}".encode('utf-8'))
         pos_data = pos_queue.get()
+        print(result)
         print(pos_data)
         if pos_data == None:
             print("get None data, end of the thread")
             break
         pos_queue.task_done()
+        data += 1
+        # time.sleep(0.1)
+        # my_serial.close()
     return None
 
 
@@ -86,7 +102,7 @@ thread_serial = threading.Thread(target=thread_serial_entry, args=("thread_seria
 pos_queue = queue.Queue()
 
 if __name__ == "__main__":
-    # serial_init("COM3", 115200)
+    serial_init("COM10", 115200)
     print("serial version is: " + serial.__version__)
     print("cv2 version is: " + cv2.__version__)
     print("电赛!!!!")
@@ -114,6 +130,7 @@ if __name__ == "__main__":
     pos_queue.put(None)
     thread_serial.join()
     
+    my_serial.close()
     video.release()
     cv2.destroyAllWindows()    
     print("all thread end")
