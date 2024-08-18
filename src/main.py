@@ -7,6 +7,16 @@ import time
 import cv2
 import numpy as np
 import os
+import ctypes
+
+class MyUnion(ctypes.Union):
+    _fields_ = [
+        ("float_value", ctypes.c_float),
+        ("char_array", ctypes.c_char * 4)
+    ]
+
+send_union = MyUnion()
+read_union = MyUnion()
 
 def nothing(x):
     pass
@@ -30,14 +40,14 @@ def serial_init(port_name, baudrate):
     my_serial = serial.Serial(port=port_name, baudrate=baudrate, bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE, stopbits=serial.STOPBITS_ONE, timeout=None)
     if my_serial.isOpen():
         print("serial open success :-)")
-        print(my_serial.name)
+        # print(my_serial.name)
         return True
     else:
         print("serial open fialed :-(")
         return False
 
 def thread_opencv_entry(x):
-    while video.isOpened():
+    while video.isOpened() and (not shut_down_event.is_set()):
         # print("working")
         ret_frame, frame = video.read()
         if not ret_frame:
@@ -64,56 +74,53 @@ def thread_opencv_entry(x):
         else:
             pos_queue.put([0, 0])
         
-        cv2.putText(img=frame, text=f"fps:{video.get(cv2.CAP_PROP_FPS)}", org=[0,50], fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=[0, 0, 0], thickness=1)
+        # cv2.putText(img=frame, text=f"fps:{video.get(cv2.CAP_PROP_FPS)}", org=[0,50], fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=1, color=[0, 0, 0], thickness=1)
         # cv2.imshow("frame", frame)
         cv2.imshow("HSV", mask)
         cv2.imshow("out", frame)
-        if cv2.waitKey(1) == ord('q'):
-            print("exit thread_opencv")
-            break
-        
+        # time.sleep(0.01)
+        cv2.waitKey(1)
     return None
 
-def thread_serial_entry(x):
+def thread_write_entry(x):
     data = 0
-    while True:
-        result = my_serial.write(f"{data}".encode('gbk'))
-        # result = my_serial.write(f"{data}".encode('utf-8'))
-        pos_data = pos_queue.get()
-        print(result)
-        print(pos_data)
-        if pos_data == None:
-            print("get None data, end of the thread")
-            break
-        pos_queue.task_done()
-        data += 1
-        # time.sleep(0.1)
-        # my_serial.close()
+    
+    while not shut_down_event.is_set():
+        send_union.float_value = 3.1415926
+        my_serial.write(send_union.char_array)
+        time.sleep(0.5)
     return None
 
-
-track_bar = ["H1", "S1", "V1", "H2", "S2", "V2"]
-red_lower = np.array([114, 49, 225])
-red_upper = np.array([179, 252, 255])
-
-thread_opencv = threading.Thread(target=thread_opencv_entry, args=("thread_opencv_entry", ))
-thread_serial = threading.Thread(target=thread_serial_entry, args=("thread_serial_entry", ))
-
-pos_queue = queue.Queue()
+def thread_read_entry(x):
+    while not shut_down_event.is_set():
+        read_data = my_serial.read_all()
+        if read_data != b'':
+            read_union.char_array = read_data[0:4]
+            # print("receive: " , read_union.float_value)
+    return None
 
 if __name__ == "__main__":
-    serial_init("COM10", 115200)
-    print("serial version is: " + serial.__version__)
-    print("cv2 version is: " + cv2.__version__)
+    serial_init("COM6", 115200)
     print("电赛!!!!")
 
     # cv2.namedWindow("frame", cv2.WINDOW_NORMAL)
     # cv2.namedWindow("HSV", cv2.WINDOW_NORMAL)
     # cv2.namedWindow("out", cv2.WINDOW_NORMAL)
+    track_bar = ["H1", "S1", "V1", "H2", "S2", "V2"]
+    red_lower = np.array([114, 49, 225])
+    red_upper = np.array([179, 252, 255])
 
+    thread_opencv = threading.Thread(target=thread_opencv_entry, args=("thread_opencv_entry", ))
+    thread_write = threading.Thread(target=thread_write_entry, args=("thread_write_entry", ))
+    thread_read = threading.Thread(target=thread_read_entry, args=("thread_read_entry", ))
+
+    global pos_queue
+    pos_queue = queue.Queue()
+    shut_down_event = threading.Event()
     global video
     video = cv2.VideoCapture(1, cv2.CAP_DSHOW)
     # video = cv2.VideoCapture(1)
+
 
     video.set(cv2.CAP_PROP_AUTO_EXPOSURE, 0.25)
     video.set(cv2.CAP_PROP_EXPOSURE, -1) # 曝光度
@@ -124,14 +131,21 @@ if __name__ == "__main__":
     print(video.get(cv2.CAP_PROP_EXPOSURE), video.get(cv2.CAP_PROP_BRIGHTNESS), video.get(cv2.CAP_PROP_CONTRAST), video.get(cv2.CAP_PROP_SATURATION))
 
     thread_opencv.start()
-    thread_serial.start()
+    thread_write.start()
+    thread_read.start()
 
-    thread_opencv.join()
-    pos_queue.put(None)
-    thread_serial.join()
-    
-    my_serial.close()
-    video.release()
-    cv2.destroyAllWindows()    
-    print("all thread end")
+    try:
+        while True: # 主线程
+            time.sleep(0.001)
+    except KeyboardInterrupt:
+        shut_down_event.set()
+
+        thread_opencv.join()
+        thread_write.join()
+        thread_read.join()
+
+        my_serial.close()
+        video.release()
+        cv2.destroyAllWindows()    
+        print("all thread end")
 
